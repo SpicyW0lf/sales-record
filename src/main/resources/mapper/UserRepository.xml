@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesrecord.repositories.UserRepository">
+    <select id="findByUsername" resultMap="usersMap">
+        select u.*, ur.role_id as rid, r.name as rname, r.id from users u
+        left join user_roles ur on u.id=ur.user_id
+        left join role r on ur.role_id=r.id
+        where u.username=#{username}
+    </select>
+
+    <resultMap id="usersMap" type="com.example.salesrecord.models.User">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <collection property="roles" ofType="com.example.salesrecord.models.Role">
+            <id property="id" column="rid" />
+            <result property="name" column="rname" />
+        </collection>
+    </resultMap>
+</mapper>
