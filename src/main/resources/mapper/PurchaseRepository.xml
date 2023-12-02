@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesrecord.repositories.PurchaseRepository">
+    <select id="findAll" resultMap="purchaseMap">
+        select p.*, u.id as uid, u.username as uu from purchase p
+        join users u on u.id = p.user_id
+    </select>
+
+    <select id="findById" resultMap="purchaseMap">
+        select p.*, u.id as uid, u.username as uu from purchase p
+        join users u on u.id = p.user_id
+        where p.id=#{id}
+    </select>
+    
+    <resultMap id="purchaseMap" type="com.example.salesrecord.models.Purchase">
+        <id property="id" column="id" />
+        <result property="date" column="date" />
+        <result property="total" column="total" />
+        <association property="user" column="uu" javaType="com.example.salesrecord.models.User" select="com.example.salesrecord.repositories.UserRepository.findByUsername" />
+    </resultMap>
+</mapper>

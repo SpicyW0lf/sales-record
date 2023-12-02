@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesrecord.repositories.ProductRepository">
+    <select id="findById" resultMap="productMap">
+        select p.* from product p
+        where id=#{id}
+    </select>
+
+    <resultMap id="productMap" type="com.example.salesrecord.models.Product">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="qty" column="qty" />
+        <result property="productCode" column="product_code" />
+        <result property="price" column="price" />
+        <association property="category" column="category_id" select="com.example.salesrecord.repositories.CategoryRepository.findById"
+                     javaType="com.example.salesrecord.models.Category" />
+    </resultMap>
+</mapper>
