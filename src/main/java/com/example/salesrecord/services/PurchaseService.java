@@ -1,5 +1,6 @@
 package com.example.salesrecord.services;
 
+import com.example.salesrecord.DTO.PurchaseItemDto;
 import com.example.salesrecord.exception.AlreadyExistsException;
 import com.example.salesrecord.exception.NotFoundException;
 import com.example.salesrecord.exception.NotStartedException;
@@ -11,7 +12,6 @@ import com.example.salesrecord.repositories.ProductRepository;
 import com.example.salesrecord.repositories.PurchaseItemRepository;
 import com.example.salesrecord.repositories.PurchaseRepository;
 import com.example.salesrecord.repositories.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +66,36 @@ public class PurchaseService {
         purchaseRepository.updateTotal(purchase);
     }
 
+    public void addItem(String name, PurchaseItemDto item) throws NotStartedException {
+        User user = userRepository.findByUsername(name);
+        Purchase purchase = purchaseRepository.findCurrentPurchase(user.getId())
+                .orElseThrow(() -> new NotStartedException("Purchase is not started"));
+        Product product = productRepository.findProductByProductCode(item.getProductCode())
+                .orElseThrow(() -> new NotFoundException("Product doesnt exists"));
+        Optional<PurchaseItem> purchaseItem = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(), product.getId());
+        if (purchaseItem.isPresent()) {
+            purchaseItemRepository.updateItemQty(
+                    purchaseItem.get().getQty() + item.getQty(),
+                    purchase.getId(),
+                    product.getId()
+            );
+        } else {
+            purchaseItemRepository.save(
+                    purchase.getId(),
+                    product.getId(),
+                    item.getQty()
+            );
+        }
+    }
+
+    public void cancelCurrentPurchase(String name) throws NotStartedException {
+        User user = userRepository.findByUsername(name);
+        Purchase purchase = purchaseRepository.findCurrentPurchase(user.getId())
+                .orElseThrow(() -> new NotStartedException("Purchase is not started"));
+        purchaseItemRepository.deleteByPurchaseId(purchase.getId());
+        purchaseRepository.delete(purchase);
+    }
+
     private double countTotal(List<PurchaseItem> items) {
         return items.stream()
                 .map(item -> item.getQty() * productRepository.findById(item.getProduct().getId()).getPrice())
@@ -73,10 +103,20 @@ public class PurchaseService {
     }
 
     private void updateProducts(List<PurchaseItem> items) {
-        items.forEach(item -> productRepository.updateQty(
-                        item.getProduct().getQty() - item.getQty(),
-                        item.getProduct().getId()
-                )
+        items.forEach(item -> {
+                    if (item.getProduct().getQty() >= item.getQty()) {
+                        productRepository.updateQty(
+                                item.getProduct().getQty() - item.getQty(),
+                                item.getProduct().getId()
+                        );
+                    } else {
+                        item.setQty(item.getProduct().getQty());
+                        productRepository.updateQty(
+                                0,
+                                item.getProduct().getId()
+                        );
+                    }
+                }
         );
     }
 }

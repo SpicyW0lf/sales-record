@@ -1,5 +1,6 @@
 package com.example.salesrecord.models;
 
+import com.example.salesrecord.DTO.PurchaseItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

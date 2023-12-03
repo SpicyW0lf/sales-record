@@ -1,5 +1,6 @@
 package com.example.salesrecord.controllers;
 
+import com.example.salesrecord.DTO.PurchaseItemDto;
 import com.example.salesrecord.DTO.ResponseDto;
 import com.example.salesrecord.exception.AlreadyExistsException;
 import com.example.salesrecord.exception.NotStartedException;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -32,6 +34,20 @@ public class PurchaseItemController {// Также добавлю сюда ру�
         purchaseService.stopPurchase("test");
 
         return ResponseEntity.ok(new ResponseDto("Current purchase is stopped"));
+    }
+
+    @PostMapping("/purchase/add")
+    public ResponseEntity<ResponseDto> addPurchaseItem(Principal principal, @RequestBody PurchaseItemDto item) throws NotStartedException {
+        purchaseService.addItem("test", item);
+
+        return ResponseEntity.ok(new ResponseDto(item.getQty() + " of " + item.getProductCode() + " was added successfully"));
+    }
+
+    @PostMapping("/purchase/cancel")
+    public ResponseEntity<ResponseDto> cancelPurchase(Principal principal) throws NotStartedException {
+        purchaseService.cancelCurrentPurchase("test");
+
+        return ResponseEntity.ok(new ResponseDto("Current purchase successfully canceled"));
     }
 
     @GetMapping("/purchase")
