@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Dmitry
+      comment: Add users
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  value: 686e3fe4-953e-11ee-b9d1-0242ac120002
+              - column:
+                  name: name
+                  value: ADMIN
+        - insert:
+             tableName: role
+             columns:
+               - column:
+                   name: id
+                   value: 9b50bfe0-953e-11ee-b9d1-0242ac120002
+               - column:
+                   name: name
+                   value: MANAGER
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  value: d1a2d5a6-953e-11ee-b9d1-0242ac120002
+              - column:
+                  name: name
+                  value: CASHIER
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 22addce8-953f-11ee-b9d1-0242ac120002
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: $2y$12$nLIF89ZmMXIpWSm5dL8q.O2CvEwHYGckuDkDyIUyvTw.GU5pD7CaC
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: eefa5982-9541-11ee-b9d1-0242ac120002
+              - column:
+                  name: username
+                  value: manager
+              - column:
+                  name: password
+                  value: $2y$12$nLIF89ZmMXIpWSm5dL8q.O2CvEwHYGckuDkDyIUyvTw.GU5pD7CaC
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 0bbfdd62-9542-11ee-b9d1-0242ac120002
+              - column:
+                  name: username
+                  value: cashier
+              - column:
+                  name: password
+                  value: $2y$12$nLIF89ZmMXIpWSm5dL8q.O2CvEwHYGckuDkDyIUyvTw.GU5pD7CaC
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 0bbfdd62-9542-11ee-b9d1-0242ac120002
+              - column:
+                  name: role_id
+                  value: d1a2d5a6-953e-11ee-b9d1-0242ac120002
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: eefa5982-9541-11ee-b9d1-0242ac120002
+              - column:
+                  name: role_id
+                  value: 9b50bfe0-953e-11ee-b9d1-0242ac120002
+        - insert:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 22addce8-953f-11ee-b9d1-0242ac120002
+              - column:
+                  name: role_id
+                  value: 686e3fe4-953e-11ee-b9d1-0242ac120002

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salesrecord.repositories.PurchaseItemRepository">
+    <select id="findByPurchaseId" resultMap="purchaseItemMap">
+        select pi.*, p.id as pid from purchase_item pi
+        join purchase p on pi.purchase_id=p.id
+        join product pr on pi.product_id=pr.id
+        where pi.purchase_id=#{id}
+    </select>
+
+    <resultMap id="purchaseItemMap" type="com.example.salesrecord.models.PurchaseItem">
+        <id property="id" column="pid" />
+        <result property="refunded" column="refunded" />
+        <result property="qty" column="qty" />
+        <association property="purchase" column="purchase_id" javaType="com.example.salesrecord.models.Purchase"
+                     select="com.example.salesrecord.repositories.PurchaseRepository.findById" />
+        <association property="product" column="product_id" javaType="com.example.salesrecord.models.Product"
+                     select="com.example.salesrecord.repositories.ProductRepository.findById" />
+    </resultMap>
+
+</mapper>
