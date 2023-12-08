@@ -1,5 +1,6 @@
 package com.example.salesrecord.models;
 
+import com.example.salesrecord.DTO.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,11 +24,11 @@ public class User implements UserDetails {
     private String password;
     private List<Role> roles;
 
-    public static User of(String username, String password) {
+    public static User of(UserDto userDto) {
         return new User(
                 UUID.randomUUID(),
-                username,
-                password,
+                userDto.getUsername(),
+                userDto.getPassword(),
                 null
         );
     }
@@ -38,7 +39,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of(new SimpleGrantedAuthority("ROLE_"));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .toList();
     }
 
     @Override

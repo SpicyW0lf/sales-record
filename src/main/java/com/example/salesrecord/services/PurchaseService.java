@@ -13,7 +13,9 @@ import com.example.salesrecord.repositories.PurchaseItemRepository;
 import com.example.salesrecord.repositories.PurchaseRepository;
 import com.example.salesrecord.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,8 +38,10 @@ public class PurchaseService {
         return purchaseItemRepository.findByPurchaseId(id);
     }
 
+    @Transactional
     public void startNewPurchase(String name) throws AlreadyExistsException {
-        User user = userRepository.findByUsername(name);
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new UsernameNotFoundException("User with such username is not found"));
         Optional<Purchase> currentPurchase = purchaseRepository.findCurrentPurchase(user.getId());
         if (currentPurchase.isPresent()) {
             throw new AlreadyExistsException("You already have started purchase");
@@ -50,8 +54,10 @@ public class PurchaseService {
         ));
     }
 
+    @Transactional
     public void stopPurchase(String name) throws NotStartedException {
-        User user = userRepository.findByUsername(name);
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new UsernameNotFoundException("User with such name is not found"));
         Purchase purchase = purchaseRepository.findCurrentPurchase(user.getId())
                 .orElseThrow(() -> new NotStartedException("Purchase is not started"));
         List<PurchaseItem> purchaseItems = purchaseItemRepository.findByPurchaseId(purchase.getId());
@@ -66,8 +72,10 @@ public class PurchaseService {
         purchaseRepository.updateTotal(purchase);
     }
 
+    @Transactional
     public void addItem(String name, PurchaseItemDto item) throws NotStartedException {
-        User user = userRepository.findByUsername(name);
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new UsernameNotFoundException("User with such name is not found"));
         Purchase purchase = purchaseRepository.findCurrentPurchase(user.getId())
                 .orElseThrow(() -> new NotStartedException("Purchase is not started"));
         Product product = productRepository.findProductByProductCode(item.getProductCode())
@@ -88,8 +96,10 @@ public class PurchaseService {
         }
     }
 
+    @Transactional
     public void cancelCurrentPurchase(String name) throws NotStartedException {
-        User user = userRepository.findByUsername(name);
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new UsernameNotFoundException("User with such name is not found"));
         Purchase purchase = purchaseRepository.findCurrentPurchase(user.getId())
                 .orElseThrow(() -> new NotStartedException("Purchase is not started"));
         purchaseItemRepository.deleteByPurchaseId(purchase.getId());
@@ -118,5 +128,28 @@ public class PurchaseService {
                     }
                 }
         );
+    }
+
+    @Transactional
+    public void refundItems(UUID id, PurchaseItemDto purchaseItemDto) {
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Purchase with such id is not found"));
+        Product product = productRepository.findProductByProductCode(purchaseItemDto.getProductCode())
+                .orElseThrow(() -> new NotFoundException("Product is not found"));
+        PurchaseItem item = purchaseItemRepository.findByPurchaseIdAndProductId(purchase.getId(), product.getId())
+                .orElseThrow(() -> new NotFoundException("Product item is not found"));
+
+        if (item.getQty() <= purchaseItemDto.getQty()) {
+            purchaseItemDto.setQty(item.getQty());
+            purchaseItemRepository.deleteByPurchaseIdAndProductId(purchase.getId(), product.getId());
+        } else {
+            purchaseItemRepository.updateItemQty(item.getQty() - purchaseItemDto.getQty(), purchase.getId(), product.getId());
+        }
+        purchase.setTotal(purchase.getTotal() - purchaseItemDto.getQty() * product.getPrice());
+        purchaseRepository.updateTotal(purchase);
+    }
+
+    public Integer countTotalForToday(LocalDate now) {
+        return purchaseRepository.countTodayTotal(now);
     }
 }

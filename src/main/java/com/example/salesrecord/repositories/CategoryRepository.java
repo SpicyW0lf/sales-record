@@ -22,8 +22,8 @@ public interface CategoryRepository {
     @Delete("DELETE FROM category WHERE category=#{name}")
     void deleteByName(String name);
 
-    @Update("UPDATE category set name=#{name}, type=#{type}")
-    void updateCategory(Category category);
+    @Update("UPDATE category set name=#{name}, type=#{type} WHERE name=#{oldName}")
+    void updateCategory(Category category, String oldName);
 
     @Select("SELECT * FROM category WHERE id=#{id}")
     Category findById(@Param("id") UUID id);

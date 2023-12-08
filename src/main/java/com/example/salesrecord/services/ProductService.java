@@ -21,16 +21,22 @@ public class ProductService {
     public int createProduct(ProductDto productDto) {
         Category category = categoryRepository.findByName(productDto.getCategoryName())
                 .orElseThrow(NotFoundException::new);
-        return productRepository.save(Product.of(
-                productDto.getName(),
-                productDto.getQty(),
-                productDto.getProductCode(),
-                productDto.getPrice(),
-                category.getId()
-        ));
+
+        return productRepository.save(Product.of(productDto), category.getId());
     }
 
     public List<Product> findAllProducts() {
         return productRepository.findAllProducts();
+    }
+
+    public void updateProduct(ProductDto productDto, String id) {
+        Category category = categoryRepository.findByName(productDto.getCategoryName())
+                .orElseThrow(NotFoundException::new);
+
+        productRepository.update(Product.of(productDto), id, category.getId());
+    }
+
+    public void deleteProduct(String id) {
+        productRepository.delete(id);
     }
 }

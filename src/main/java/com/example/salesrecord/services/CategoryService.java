@@ -23,4 +23,16 @@ public class CategoryService {
         return categoryRepository.findByName(name)
                 .orElseThrow(NotFoundException::new);
     }
+
+    public void deleteCategory(String name) {
+        categoryRepository.deleteByName(name);
+    }
+
+    public void updateCategory(CategoryDto categoryDto, String name) {
+        categoryRepository.updateCategory(Category.of(
+                        categoryDto.getName(),
+                        categoryDto.getType()
+                ),
+                name);
+    }
 }

@@ -8,6 +8,19 @@
         where u.username=#{username}
     </select>
 
+    <select id="findAll" resultMap="usersMap">
+        select u.*, ur.role_id as rid, r.name as rname, r.id from users u
+        left join user_roles ur on u.id=ur.user_id
+        left join role r on ur.role_id=r.id
+    </select>
+
+    <select id="findById" resultMap="usersMap">
+        select u.*, ur.role_id as rid, r.name as rname, r.id from users u
+        left join user_roles ur on u.id=ur.user_id
+        left join role r on ur.role_id=r.id
+        where u.id=#{id, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}
+    </select>
+
     <resultMap id="usersMap" type="com.example.salesrecord.models.User">
         <id property="id" column="id" />
         <result property="username" column="username" />

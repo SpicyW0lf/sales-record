@@ -1,6 +1,9 @@
 spring:
   datasource:
     url: 'jdbc:postgresql://localhost:5432/sales'
-    username: postgres
-    password: 12314
+    username: ${username}
+    password: ${password}
     driver-class-name: org.postgresql.Driver
+mybatis:
+  type-aliases-package: com.example.salesrecord.typehandler
+  mapper-locations: classpath:mapper/*.xml

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -13,6 +14,5 @@ public interface RoleRepository {
     @Select("SELECT * FROM role WHERE id=#{id, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}")
     Role findById(UUID id);
 
-    @Select("SELECT * FROM role WHERE name=#{name}")
-    Role findByName(String name);
+    List<Role> findByNames(List<String> names);
 }

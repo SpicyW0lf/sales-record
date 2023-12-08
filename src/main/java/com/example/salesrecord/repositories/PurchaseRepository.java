@@ -3,6 +3,8 @@ package com.example.salesrecord.repositories;
 import com.example.salesrecord.models.Purchase;
 import org.apache.ibatis.annotations.*;
 
+import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import java.util.UUID;
 public interface PurchaseRepository {
     List<Purchase> findAll();
 
-    Purchase findById(UUID id);
+    Optional<Purchase> findById(UUID id);
 
     @Select("SELECT * FROM purchase WHERE user_id=#{id, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler} " +
             "AND total=0")
@@ -29,4 +31,10 @@ public interface PurchaseRepository {
 
     @Update("UPDATE purchase SET total=#{total} WHERE id=#{id, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}")
     void updateTotal(Purchase purchase);
+
+    @Delete("DELETE FROM purchase")
+    void clear();
+
+    @Select("SELECT sum(total) FROM purchase WHERE date=#{date}")
+    Integer countTodayTotal(LocalDate now);
 }

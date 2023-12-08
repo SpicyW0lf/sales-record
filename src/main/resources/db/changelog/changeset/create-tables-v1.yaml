@@ -164,3 +164,16 @@ databaseChangeLog:
               - column:
                   name: qty
                   type: INTEGER
+        - createTable:
+            tableName: earnings
+            columns:
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: INTEGER
+                  constraints:
+                    nullable: true

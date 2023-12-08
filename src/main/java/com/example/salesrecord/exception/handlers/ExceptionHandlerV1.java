@@ -3,6 +3,7 @@ package com.example.salesrecord.exception.handlers;
 import com.example.salesrecord.DTO.ResponseDto;
 import com.example.salesrecord.exception.AlreadyExistsException;
 import com.example.salesrecord.exception.NotFoundException;
+import com.example.salesrecord.exception.NotStartedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,5 +28,10 @@ public class ExceptionHandlerV1 {
     public ResponseEntity<ResponseDto> badRequest(HttpClientErrorException.BadRequest ex) {
         return ResponseEntity.badRequest()
                 .body(new ResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotStartedException.class)
+    public ResponseEntity<ResponseDto> notStarted(Exception ex) {
+        return ResponseEntity.ok(new ResponseDto(ex.getMessage()));
     }
 }

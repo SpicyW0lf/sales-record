@@ -29,4 +29,12 @@ public interface PurchaseItemRepository {
 
     @Delete("DELETE FROM purchase_item WHERE purchase_id=#{purchaseId, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}")
     void deleteByPurchaseId(UUID purchaseId);
+
+    @Delete("DELETE FROM purchase_item" +
+            " WHERE purchase_id=#{purchaseId, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}," +
+            "product_id=#{productId, javaType=java.util.UUID, jdbcType=OTHER, typeHandler=UuidTypeHandler}")
+    void deleteByPurchaseIdAndProductId(UUID purchaseId, UUID productId);
+
+    @Delete("DELETE FROM purchase_item")
+    void clear();
 }
